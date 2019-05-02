@@ -25,9 +25,12 @@ class Api {
     // binding function
     this.create = this.create.bind(this);
     this.get = this.get.bind(this);
+    this.find = this.find.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
-  create(body: any) {
+  protected create(body: any) {
     return new Promise((resolve, reject) => {
       // copy the value of object
       const bodyClone = Object.assign({}, body);
@@ -51,7 +54,7 @@ class Api {
     });
   }
 
-  get(body: any, query?: any) {
+  protected get(body: any, query?: any) {
     return new Promise((resolve, reject) => {
       const bodyClone = Object.assign({}, body);
       const queryClone = Object.assign({}, query);
@@ -101,7 +104,7 @@ class Api {
     });
   }
 
-  find(params: any) {
+  protected find(params: any) {
     return new Promise((resolve, reject) => {
       const paramsClone = Object.assign({}, params);
       let { _id: idParams } = paramsClone;
@@ -129,7 +132,7 @@ class Api {
     });
   }
 
-  update(params: any, body: any) {
+  protected update(params: any, body: any) {
     return new Promise((resolve, reject) => {
       const paramsClone = Object.assign({}, params);
       const bodyClone = Object.assign({}, body);
@@ -160,7 +163,7 @@ class Api {
     });
   }
 
-  delete(params: any) {
+  protected delete(params: any) {
     return new Promise((resolve, reject) => {
       const paramsClone = Object.assign({}, params);
       const { id: idParams } = paramsClone;
