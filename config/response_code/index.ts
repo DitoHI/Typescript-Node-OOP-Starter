@@ -15,6 +15,10 @@ export default {
     code: 401,
     message: "Unauthorized"
   },
+  notFound: {
+    code: 404,
+    message: "Not Found"
+  },
   serverError: {
     code: 500,
     message: "Internal Server Error"
