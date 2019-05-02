@@ -1,6 +1,6 @@
 ## Typescript Express Starter
 
-Build for them who love **OOP** so much with static typing. The parent middelware (_or_ we called **Api**) for all the function of _CRUD_ is done
+Build for them who love **OOP** so much with static typing. The parent middleware (_or_ we called **Api**) for all the function of _CRUD_ is done
 
 ## Dependencies
 
