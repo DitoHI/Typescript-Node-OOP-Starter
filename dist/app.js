@@ -34,6 +34,7 @@ if (!isProduction) {
   app.use(errorhandler());
 }
 db_1.default.init();
+require("./models/User");
 app.use(routes_1.default);
 // catch any 404
 app.use((req, res) => {

@@ -11,4 +11,8 @@ router.get("/test", (req, res) => {
   });
 });
 
+// import api route
+import locationRoutes from "./location";
+router.use("/location", locationRoutes);
+
 export default router;

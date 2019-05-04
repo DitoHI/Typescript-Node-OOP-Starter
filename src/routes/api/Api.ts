@@ -20,7 +20,7 @@ class Api {
     this.model = mongoose.model(modelName);
     this.populate = populate;
     this.select = select;
-    this.unselect = unselect;
+    this.unselect = unselect ? unselect + " -__v" : "-__v";
 
     // binding function
     this.create = this.create.bind(this);
@@ -61,10 +61,13 @@ class Api {
 
       const sort: any = {};
       if (bodyClone) {
-        if (
-          typeof queryClone.caseInsensitive === "boolean" &&
-          queryClone.caseInsensitive
-        ) {
+        // convert string of [true|false]
+        // to boolean
+        if (queryClone.caseInsensitive) {
+          queryClone.caseInsensitive = queryClone.caseInsensitive === "true";
+        }
+
+        if (queryClone.caseInsensitive) {
           const bodyKeys = Object.keys(bodyClone);
           const bodyValues = Object.values(bodyClone);
           bodyValues.forEach((value, index) => {
@@ -72,7 +75,9 @@ class Api {
               typeof value === "string" &&
               !mongoose.Types.ObjectId.isValid(value)
             ) {
-              bodyClone[bodyKeys[index]] = { $regex: new RegExp(value, "i") };
+              if (!parseInt(value)) {
+                bodyClone[bodyKeys[index]] = { $regex: new RegExp(value, "i") };
+              }
             }
           });
         }
@@ -90,7 +95,7 @@ class Api {
         .skip(parseInt(queryClone.startAt, 10))
         .sort(sort)
         .populate(this.populate || "")
-        .select(`${this.select} || ${this.unselect}`)
+        .select(this.select || this.unselect)
         .exec()
         .then((result: any[]) => {
           if (!result || result.length === 0) {

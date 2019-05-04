@@ -6,8 +6,10 @@ import errorhandler = require("errorhandler");
 // custom func
 import responseCode from "./config/responseCode";
 import { IError } from "./config/publicInterface";
-import routes from "./routes";
 import db from "./config/db";
+import "./models/User";
+import "./models/Province";
+import routes from "./routes";
 
 dotenv.config();
 
@@ -17,6 +19,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 if (!isProduction) {
   app.use(errorhandler());
