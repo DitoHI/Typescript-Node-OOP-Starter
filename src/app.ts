@@ -9,6 +9,7 @@ import { IError } from "./config/publicInterface";
 import db from "./config/db";
 import "./models/User";
 import "./models/Province";
+import "./models/District";
 import routes from "./routes";
 
 dotenv.config();
