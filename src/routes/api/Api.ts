@@ -20,7 +20,7 @@ class Api {
     this.model = mongoose.model(modelName);
     this.populate = populate;
     this.select = select;
-    this.unselect = unselect ? unselect + " -__v" : "-__v";
+    this.unselect = unselect ? `${unselect} -__v` : "-__v";
 
     // binding function
     this.create = this.create.bind(this);
@@ -30,8 +30,8 @@ class Api {
     this.delete = this.delete.bind(this);
   }
 
-  protected create(body: any) {
-    return new Promise((resolve, reject) => {
+  create(body: any) {
+    return new Promise(async (resolve, reject) => {
       // copy the value of object
       const bodyClone = Object.assign({}, body);
 
@@ -46,7 +46,9 @@ class Api {
       return bodyItem
         .save()
         .then((result: any) => {
-          return resolve(result);
+          return bodyItem.populate(this.populate || "", () => {
+            return resolve(result);
+          });
         })
         .catch((err: any) => {
           return reject(err.message || `Failed to create ${this.modelName}`);
@@ -54,7 +56,7 @@ class Api {
     });
   }
 
-  protected get(body: any, query?: any) {
+  get(body?: any, query?: any) {
     return new Promise((resolve, reject) => {
       const bodyClone = Object.assign({}, body);
       const queryClone = Object.assign({}, query);
@@ -75,7 +77,7 @@ class Api {
               typeof value === "string" &&
               !mongoose.Types.ObjectId.isValid(value)
             ) {
-              if (!parseInt(value)) {
+              if (!parseInt(value, 10)) {
                 bodyClone[bodyKeys[index]] = { $regex: new RegExp(value, "i") };
               }
             }
@@ -109,7 +111,7 @@ class Api {
     });
   }
 
-  protected find(params: any) {
+  find(params: any) {
     return new Promise((resolve, reject) => {
       const paramsClone = Object.assign({}, params);
       const { _id: idParams } = paramsClone;
@@ -120,9 +122,16 @@ class Api {
         paramsClone["_id"] = mongoose.Types.ObjectId(idParams);
       }
 
+      if (
+        Object.keys(paramsClone).length === 0 &&
+        paramsClone.constructor === Object
+      ) {
+        return reject(`The params of ${this.modelName} empty`);
+      }
+
       return this.model
         .findOne(paramsClone)
-        .select(`${this.select} || ${this.unselect}`)
+        .select(this.select || this.unselect)
         .populate(this.populate || "")
         .exec()
         .then((result: any) => {
@@ -137,7 +146,7 @@ class Api {
     });
   }
 
-  protected update(params: any, body: any) {
+  update(params: any, body: any) {
     return new Promise((resolve, reject) => {
       const paramsClone = Object.assign({}, params);
       const bodyClone = Object.assign({}, body);
@@ -153,8 +162,9 @@ class Api {
       }
 
       return this.model
-        .findByIdAndUpdate(idParams, bodyClone, { new: true })
+        .findOneAndUpdate({ _id: idParams }, bodyClone, { new: true })
         .populate(this.populate || "")
+        .select(this.select || this.unselect)
         .exec()
         .then((result: any) => {
           if (!result) {
@@ -168,7 +178,7 @@ class Api {
     });
   }
 
-  protected delete(params: any) {
+  delete(params: any) {
     return new Promise((resolve, reject) => {
       const paramsClone = Object.assign({}, params);
       const { id: idParams } = paramsClone;
@@ -183,6 +193,7 @@ class Api {
       return this.model
         .findBydIdAndRemove(idParams)
         .populate(this.populate || "")
+        .select(this.select || this.unselect)
         .exec()
         .then((result: any) => {
           return resolve(result);

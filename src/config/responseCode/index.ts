@@ -19,6 +19,10 @@ export default {
     code: 404,
     message: "Not Found"
   },
+  notAcceptable: {
+    code: 406,
+    message: "Not Acceptable"
+  },
   serverError: {
     code: 500,
     message: "Internal Server Error"
